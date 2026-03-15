@@ -299,24 +299,16 @@ function atualizarKPIs() {
   document.getElementById('kpi-roe').textContent = 'ROE ' + Number(roe).toFixed(1) + '%';
 }
 
+function sanitize(v) {
+  if(v === null || v === undefined) return '0';
+  return String(v).replace(/\s/g,'').replace(/,(?=\d{3})/g,'').replace(',','.');
+}
 function getVals() {
-  return {
-    periodo: document.getElementById('periodo').value,
-    receita_real: document.getElementById('receita_real').value,
-    receita_budget: document.getElementById('receita_budget').value,
-    ebitda: document.getElementById('ebitda').value,
-    ebit: document.getElementById('ebit').value,
-    rl: document.getElementById('rl').value,
-    margem_bruta: document.getElementById('margem_bruta').value,
-    margem_ebitda: document.getElementById('margem_ebitda').value,
-    margem_liq: document.getElementById('margem_liq').value,
-    cf_oper: document.getElementById('cf_oper').value,
-    saldo: document.getElementById('saldo').value,
-    pmr: document.getElementById('pmr').value,
-    cap_prop: document.getElementById('cap_prop').value,
-    autonomia: document.getElementById('autonomia').value,
-    roe: document.getElementById('roe').value
-  };
+  const ids = ['receita_real','receita_budget','ebitda','ebit','rl','margem_bruta',
+               'margem_ebitda','margem_liq','cf_oper','saldo','pmr','cap_prop','autonomia','roe'];
+  const out = { periodo: document.getElementById('periodo').value };
+  ids.forEach(id => { out[id] = sanitize(document.getElementById(id).value); });
+  return out;
 }
 
 function readURLParams() {
@@ -324,7 +316,7 @@ function readURLParams() {
   const map = { rr:'receita_real', rb:'receita_budget', ebitda:'ebitda', ebit:'ebit', rl:'rl', mb:'margem_bruta', me:'margem_ebitda', ml:'margem_liq', cfo:'cf_oper', saldo:'saldo', pmr:'pmr', cp:'cap_prop', af:'autonomia', roe:'roe' };
   let loaded = false;
   if(p.get('periodo')) { document.getElementById('periodo').value = p.get('periodo'); loaded = true; }
-  Object.entries(map).forEach(([k,id]) => { if(p.get(k)) { document.getElementById(id).value = p.get(k); loaded = true; } });
+  Object.entries(map).forEach(([k,id]) => { if(p.get(k)) { const raw = p.get(k); document.getElementById(id).value = raw.replace(',','.'); loaded = true; } });
   if(loaded) {
     const sb = document.getElementById('source-badge');
     sb.textContent = 'Power BI'; sb.style.background = 'rgba(39,174,96,0.3)';
