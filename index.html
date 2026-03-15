@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Analisador Financeiro IA — Nexora Solutions</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: Arial, sans-serif; background: #f5f5f5; color: #1a1a1a; padding: 0; }
@@ -354,7 +354,7 @@ function buildPrompt() {
 }
 
 async function analisar() {
-  const apiKey = document.getElementById('api-key').value.trim();
+  const apiKey = document.getElementById('api-key').value.trim().replace(/[^\x20-\x7E]/g, '');
   if(!apiKey) { document.getElementById('status').textContent = 'Introduz a API key antes de continuar.'; return; }
   const btn = document.getElementById('btn-analisar');
   const status = document.getElementById('status');
@@ -365,7 +365,7 @@ async function analisar() {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({ model: 'claude-3-5-sonnet-20241022', max_tokens: 1000, messages: [{ role: 'user', content: buildPrompt() }] })
+      body: JSON.stringify({ model: 'claude-3-5-sonnet-20240620', max_tokens: 1000, messages: [{ role: 'user', content: buildPrompt() }] })
     });
     if(!response.ok) throw new Error(`Erro ${response.status} — verifica a API key`);
     const data = await response.json();
